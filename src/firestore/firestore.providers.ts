@@ -1,9 +1,11 @@
+import { FountainDocument } from 'src/fountains/entities/fountain.document';
 import { UserDocument } from 'src/users/entities/users.document';
 
 export const FirestoreDatabaseProvider = 'firestoredb';
 export const FirestoreOptionsProvider = 'firestoreOptions';
 export const FirestoreCollectionProviders: string[] = [
   UserDocument.collectionName,
+  FountainDocument.collectionName,
 ];
 
 const firebaseConfig = {

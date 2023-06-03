@@ -1,15 +1,29 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { CreateFountainDto } from './dto/create-fountain.dto';
 import { UpdateFountainDto } from './dto/update-fountain.dto';
+import { FountainDocument } from './entities/fountain.document';
+import { CollectionReference } from '@google-cloud/firestore';
+import { map } from 'ramda';
+
 
 @Injectable()
 export class FountainsService {
-  create(createFountainDto: CreateFountainDto) {
-    return 'This action adds a new fountain';
+  constructor(
+    @Inject(FountainDocument.collectionName)
+    private fountainCollection: CollectionReference<FountainDocument>,
+  ) {}
+
+  async create({ added_by, name, rating, location, description }: FountainDocument) {
+    const docRef = await this.fountainCollection.add({ added_by, name, rating, location, description });
+
+    return (await docRef.get()).data();
   }
 
-  findAll() {
-    return `This action returns all fountains`;
+
+
+  async findAll() {
+    const snapshot = await this.fountainCollection.get();
+    return map((doc) => doc.data(), snapshot.docs);
   }
 
   findOne(id: number) {
