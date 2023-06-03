@@ -13,8 +13,8 @@ export class UsersService {
     private usersCollection: CollectionReference<UserDocument>,
   ) {}
 
-  async create({ email, name }: UserDocument): Promise<User> {
-    const doc = await this.usersCollection.add({ email, name });
+  async create(user: UserDocument): Promise<User> {
+    const doc = await this.usersCollection.add(user);
 
     return getDataWithId(doc);
   }
