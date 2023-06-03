@@ -1,7 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserDocument } from './entities/users.document';
-import { CollectionReference } from '@google-cloud/firestore';
+import {
+  CollectionReference,
+  DocumentReference,
+  QueryDocumentSnapshot,
+} from '@google-cloud/firestore';
 import { map } from 'ramda';
 import { User } from './entities/user.entity';
 import { getDataWithId } from 'src/functions';
@@ -23,7 +27,7 @@ export class UsersService {
     const { docs } = await this.usersCollection.get();
 
     return map(
-      (doc) => ({
+      (doc: QueryDocumentSnapshot<UserDocument>): User => ({
         ...doc.data(),
         id: doc.id,
       }),
