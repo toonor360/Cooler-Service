@@ -1,5 +1,7 @@
+import { IsString } from 'class-validator';
 import { UserDocument } from './users.document';
 
-export interface User extends UserDocument {
+export class User extends UserDocument {
+  @IsString()
   id: string;
 }
