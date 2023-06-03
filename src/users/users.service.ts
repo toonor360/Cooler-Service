@@ -3,7 +3,6 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UserDocument } from './entities/users.document';
 import {
   CollectionReference,
-  DocumentReference,
   QueryDocumentSnapshot,
 } from '@google-cloud/firestore';
 import { map } from 'ramda';
@@ -18,7 +17,7 @@ export class UsersService {
   ) {}
 
   async create(user: UserDocument): Promise<User> {
-    const doc = await this.usersCollection.add(user);
+    const doc = await this.usersCollection.add({ ...user });
 
     return getDataWithId(doc);
   }
@@ -41,7 +40,7 @@ export class UsersService {
 
   async update(id: string, updateUserDto: UpdateUserDto) {
     const doc = this.usersCollection.doc(id);
-    await doc.update(updateUserDto);
+    await doc.update({ ...updateUserDto });
 
     return getDataWithId(doc);
   }
