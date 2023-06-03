@@ -1,8 +1,8 @@
 {
   "name": "cooler-service",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "description": "api for the infamous cooler project",
+  "author": "blioni",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
