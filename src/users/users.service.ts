@@ -1,9 +1,14 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserDocument } from './entities/users.document';
-import { CollectionReference } from '@google-cloud/firestore';
+import {
+  CollectionReference,
+  DocumentReference,
+  QueryDocumentSnapshot,
+} from '@google-cloud/firestore';
 import { map } from 'ramda';
+import { User } from './entities/user.entity';
+import { getDataWithId } from 'src/functions';
 
 @Injectable()
 export class UsersService {
@@ -12,26 +17,39 @@ export class UsersService {
     private usersCollection: CollectionReference<UserDocument>,
   ) {}
 
-  async create({ email, name }: UserDocument) {
-    const docRef = await this.usersCollection.add({ email, name });
+  async create(user: UserDocument): Promise<User> {
+    const doc = await this.usersCollection.add(user);
 
-    return (await docRef.get()).data();
+    return getDataWithId(doc);
   }
 
-  async findAll() {
-    const snapshot = await this.usersCollection.get();
-    return map((doc) => doc.data(), snapshot.docs);
+  async findAll(): Promise<User[]> {
+    const { docs } = await this.usersCollection.get();
+
+    return map(
+      (doc: QueryDocumentSnapshot<UserDocument>): User => ({
+        ...doc.data(),
+        id: doc.id,
+      }),
+      docs,
+    );
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: string): Promise<User> {
+    return getDataWithId(this.usersCollection.doc(id));
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    const doc = this.usersCollection.doc(id);
+    await doc.update(updateUserDto);
+
+    return getDataWithId(doc);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: string) {
+    const doc = this.usersCollection.doc(id);
+    await doc.delete();
+
+    return id;
   }
 }
